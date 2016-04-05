@@ -1,0 +1,111 @@
+﻿@model LocalStorage.Models.Step1
+
+@{
+    ViewBag.Title = "Step 1";
+}
+
+<h2>Step 1</h2>
+
+@using (Html.BeginForm("Step2", "Steps", FormMethod.Get)) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>Step 1</legend>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.FirstName)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.FirstName)
+            @Html.ValidationMessageFor(model => model.FirstName)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.LastName)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.LastName)
+            @Html.ValidationMessageFor(model => model.LastName)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PatientDOB)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.PatientDOB)
+            @Html.ValidationMessageFor(model => model.PatientDOB)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Email)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Email)
+            @Html.ValidationMessageFor(model => model.Email)
+        </div>
+
+
+        <p>
+            <input type="submit" value="Next" id="next"/>
+        </p>
+    </fieldset>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+@section MyScripts{
+    <script type="text/javascript">
+        $(function () {
+            var storage = window.sessionStorage;
+            $("#next").click(function () {
+                if (Modernizr.localstorage) {
+                    saveToLocal();
+                } else {
+                    alert("Local storage not supported.");
+                }
+            });
+
+
+            function saveToLocal() {
+                var model = {};
+                model.FirstName = $("#FirstName").val();
+                model.LastName = $("#LastName").val();
+                model.DateOfBirth = $("#PatientDOB").val();
+                model.Email = $("#Email").val();
+                storage.setItem('localStorageDemoStep1', JSON.stringify(model));
+            }
+
+            function showStep1Data() {
+                var model = {};
+                if (storage !== null) {
+                    var storedData = storage.getItem("localStorageDemoStep1");
+                    if (storedData) {
+                        model = JSON.parse(storedData);
+                    }
+                    //model = JSON.parse(storage);
+                }
+                if (model === null) {
+                    clearUI();
+                }
+                else {
+                    $("#FirstName").val(model.FirstName);
+                    $("#LastName").val(model.LastName);
+                    $("#PatientDOB").val(model.DateOfBirth);
+                    $("#Email").val(model.Email);
+                }
+            }
+
+
+            function clearUI() {
+                $("#FirstName, #LastName", "#PatientDOB", "#Email").val("");
+            }
+
+
+            showStep1Data();
+        });
+    </script>
+}
+
+

@@ -1,0 +1,125 @@
+﻿@model LocalStorage.Models.Step2
+
+@{
+    ViewBag.Title = "Step 2";
+}
+
+<h2>Step 2</h2>
+
+@using (Html.BeginForm("Step3", "Steps", FormMethod.Get))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>Step 2</legend>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Address1)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Address1)
+            @Html.ValidationMessageFor(model => model.Address1)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Address2)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Address2)
+            @Html.ValidationMessageFor(model => model.Address2)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.City)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.City)
+            @Html.ValidationMessageFor(model => model.City)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.State)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.State)
+            @Html.ValidationMessageFor(model => model.State)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Zip)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Zip)
+            @Html.ValidationMessageFor(model => model.Zip)
+        </div>
+
+        <p>
+            <input type="submit" value="Next" id="next"/>
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Previous", "Step1")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+@section MyScripts{
+    <script type="text/javascript">
+        $(function () {
+            var storage = window.sessionStorage;
+            $("#next").click(function () {
+                if (Modernizr.localstorage) {
+                    saveToLocal();
+                } else {
+                    alert("Local storage not supported.");
+                }
+            });
+
+
+            function saveToLocal() {
+                var model = {};
+                model.Address1 = $("#Address1").val();
+                model.Address2 = $("#Address2").val();
+                model.City = $("#City").val();
+                model.State = $("#State").val();
+                model.Zip = $("#Zip").val();
+                storage.setItem('localStorageDemoStep2', JSON.stringify(model));
+            }
+
+            function showStep2Data() {
+                var model = {};
+                if (storage !== null) {
+                    var storedData = storage.getItem("localStorageDemoStep2");
+                    if (storedData) {
+                        model = JSON.parse(storedData);
+                    }
+                }
+                if (model === null) {
+                    clearUI();
+                }
+                else {
+                    $("#Address1").val(model.Address1);
+                    $("#Address2").val(model.Address2);
+                    $("#City").val(model.City);
+                    $("#State").val(model.State);
+                    $("#Zip").val(model.Zip);
+                }
+            }
+
+
+            function clearUI() {
+                $("#Address1, #Address2", "#City", "#State", "#Zip").val("");
+            }
+
+
+            showStep2Data();
+        });
+    </script>
+}
+
+
